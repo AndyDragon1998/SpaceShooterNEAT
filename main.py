@@ -77,24 +77,24 @@ class Player:
 
     def draw(self, screen, dopomine):
         screen.blit(self.image, (self.hitbox.x, self.hitbox.y))
-        screen.blit(self.girlImage, (self.girlHitbox.x, self.girlHitbox.y))
-        stats_font = pygame.font.SysFont("Roboto Condensed", 20)
-        labelhp = stats_font.render("HP: " + str(self.HP), True, (255, 255, 255))
-        labelhp_rect = labelhp.get_rect()
-        labelhp_rect.center = (self.girlHitbox.x + 136, self.girlHitbox.y+20)
-        screen.blit(labelhp, labelhp_rect)
-        labelht = stats_font.render("HEAT: " + str(self.HEAT), True, (255, 255, 255))
-        labelht_rect = labelht.get_rect()
-        labelht_rect.center = (self.girlHitbox.x + 136, self.girlHitbox.y+50)
-        screen.blit(labelht, labelht_rect)
-        labeldp = stats_font.render("Pts: " + str(dopomine), True, (255, 255, 255))
-        labeldp_rect = labeldp.get_rect()
-        labeldp_rect.center = (self.girlHitbox.x + 136, self.girlHitbox.y+80)
-        screen.blit(labeldp, labeldp_rect)
-        labelsc = stats_font.render("SCORE: " + str(self.SCORE), True, (255, 255, 255))
-        labelsc_rect = labelsc.get_rect()
-        labelsc_rect.center = (self.girlHitbox.x + 136, self.girlHitbox.y+110)
-        screen.blit(labelsc, labelsc_rect)
+        #screen.blit(self.girlImage, (self.girlHitbox.x, self.girlHitbox.y))
+        #stats_font = pygame.font.SysFont("Roboto Condensed", 20)
+        #labelhp = stats_font.render("HP: " + str(self.HP), True, (255, 255, 255))
+        #labelhp_rect = labelhp.get_rect()
+        #labelhp_rect.center = (self.girlHitbox.x + 136, self.girlHitbox.y+20)
+        #screen.blit(labelhp, labelhp_rect)
+        #labelht = stats_font.render("HEAT: " + str(self.HEAT), True, (255, 255, 255))
+        #labelht_rect = labelht.get_rect()
+        #labelht_rect.center = (self.girlHitbox.x + 136, self.girlHitbox.y+50)
+        #screen.blit(labelht, labelht_rect)
+        #labeldp = stats_font.render("Pts: " + str(dopomine), True, (255, 255, 255))
+        #labeldp_rect = labeldp.get_rect()
+        #labeldp_rect.center = (self.girlHitbox.x + 136, self.girlHitbox.y+80)
+        #screen.blit(labeldp, labeldp_rect)
+        #labelsc = stats_font.render("SCORE: " + str(self.SCORE), True, (255, 255, 255))
+        #labelsc_rect = labelsc.get_rect()
+        #labelsc_rect.center = (self.girlHitbox.x + 136, self.girlHitbox.y+110)
+        #screen.blit(labelsc, labelsc_rect)
 class Asteroid:
     image = None
     hitbox = None
@@ -301,7 +301,7 @@ def run_game(genomes, config):
                     player.bulCool = 15   
                  
        # flip & tick
-        clock.tick(600)  # fixed 60 fps
+        #clock.tick(600)  # fixed 60 fps
         pygame.display.flip()
 
 if __name__ == "__main__":
