@@ -10,7 +10,7 @@ width = 1024
 height = 720
 
 score = 0
-
+time = 0
 generation = 0
 asteroid_speed = 15
 total_asteroids = 5
@@ -34,6 +34,8 @@ class Player:
     state = PlayerState.UP
     bullets = []
     bulCool = 0
+    lastX = 0
+    lastY = 0
     cooldown = 10
     HP = 3
     HEAT = 0
@@ -77,24 +79,24 @@ class Player:
 
     def draw(self, screen, dopomine):
         screen.blit(self.image, (self.hitbox.x, self.hitbox.y))
-        #screen.blit(self.girlImage, (self.girlHitbox.x, self.girlHitbox.y))
-        #stats_font = pygame.font.SysFont("Roboto Condensed", 20)
-        #labelhp = stats_font.render("HP: " + str(self.HP), True, (255, 255, 255))
-        #labelhp_rect = labelhp.get_rect()
-        #labelhp_rect.center = (self.girlHitbox.x + 136, self.girlHitbox.y+20)
-        #screen.blit(labelhp, labelhp_rect)
-        #labelht = stats_font.render("HEAT: " + str(self.HEAT), True, (255, 255, 255))
-        #labelht_rect = labelht.get_rect()
-        #labelht_rect.center = (self.girlHitbox.x + 136, self.girlHitbox.y+50)
-        #screen.blit(labelht, labelht_rect)
-        #labeldp = stats_font.render("Pts: " + str(dopomine), True, (255, 255, 255))
-        #labeldp_rect = labeldp.get_rect()
-        #labeldp_rect.center = (self.girlHitbox.x + 136, self.girlHitbox.y+80)
-        #screen.blit(labeldp, labeldp_rect)
-        #labelsc = stats_font.render("SCORE: " + str(self.SCORE), True, (255, 255, 255))
-        #labelsc_rect = labelsc.get_rect()
-        #labelsc_rect.center = (self.girlHitbox.x + 136, self.girlHitbox.y+110)
-        #screen.blit(labelsc, labelsc_rect)
+        screen.blit(self.girlImage, (self.girlHitbox.x, self.girlHitbox.y))
+        stats_font = pygame.font.SysFont("Roboto Condensed", 20)
+        labelhp = stats_font.render("HP: " + str(self.HP), True, (255, 255, 255))
+        labelhp_rect = labelhp.get_rect()
+        labelhp_rect.center = (self.girlHitbox.x + 136, self.girlHitbox.y+20)
+        screen.blit(labelhp, labelhp_rect)
+        labelht = stats_font.render("HEAT: " + str(self.HEAT), True, (255, 255, 255))
+        labelht_rect = labelht.get_rect()
+        labelht_rect.center = (self.girlHitbox.x + 136, self.girlHitbox.y+50)
+        screen.blit(labelht, labelht_rect)
+        labeldp = stats_font.render("Pts: " + str(dopomine), True, (255, 255, 255))
+        labeldp_rect = labeldp.get_rect()
+        labeldp_rect.center = (self.girlHitbox.x + 136, self.girlHitbox.y+80)
+        screen.blit(labeldp, labeldp_rect)
+        labelsc = stats_font.render("SCORE: " + str(self.SCORE), True, (255, 255, 255))
+        labelsc_rect = labelsc.get_rect()
+        labelsc_rect.center = (self.girlHitbox.x + 136, self.girlHitbox.y+110)
+        screen.blit(labelsc, labelsc_rect)
 class Asteroid:
     image = None
     hitbox = None
@@ -132,7 +134,7 @@ class Bullet:
 
 
 def run_game(genomes, config):
-    global score, asteroid, players, generation, asteroid_speed, score_speedup, total_asteroids, bullet_speed
+    global score, asteroid, players, generation, asteroid_speed, score_speedup, total_asteroids, bullet_speed, time
     
     generation += 1
     asteroid_speed = 3
@@ -182,7 +184,7 @@ def run_game(genomes, config):
         
         BGY1 +=1
         BGY2 +=1
-        
+        time +=1
         if BGY1 > 1024:
             BGY1 = -1024
         if BGY2 > 1024:
@@ -213,24 +215,39 @@ def run_game(genomes, config):
             for j, player in enumerate(players):
                 player.draw(screen,genomes[j][1].fitness)
                 
+                if time % 300 == 0:
+                    if player.hitbox.x == player.lastX & player.hitbox.y == player.lastY:
+                        try:
+                            genomes[j][1].fitness -= 20
+                        except IndexError:
+                            print(":)")
+                    else:
+                        try:
+                            genomes[j][1].fitness += 0
+                        except IndexError:
+                            print(":)")
+                            
+                    player.lastX = player.hitbox.x 
+                    player.lastY = player.hitbox.y
+                          
                 if player.hitbox.colliderect(ast.hitbox):
                     genomes[j][1].fitness -= 3  # lower fitness (failed)
                     ast.hitbox.y = random.randint(-600, 5)
                     ast.hitbox.x = random.randint(10,690)
                     score += 1
                     player.HP -= 1
-                if player.HEAT >= 120:
-                    genomes[j][1].fitness -= 30  # lower fitness (failed)
+                if player.HEAT >= 200:
+                    genomes[j][1].fitness -= 10  # lower fitness (failed)
                     players.pop(j)
                     genomes.pop(j)
                     nets.pop(j)
                 if player.SCORE <= 0:
-                    genomes[j][1].fitness -= 30  # lower fitness (failed)
+                    genomes[j][1].fitness -= 50  # lower fitness (failed)
                     players.pop(j)
                     genomes.pop(j)
                     nets.pop(j)
                 if player.HP <= 0:
-                    genomes[j][1].fitness -= 20  # lower fitness (failed)
+                    genomes[j][1].fitness -= 50  # lower fitness (failed)
                     players.pop(j)
                     genomes.pop(j)
                     nets.pop(j)
@@ -254,14 +271,14 @@ def run_game(genomes, config):
                     
                 
         # display generation
-        label = heading_font.render("Поколение: " + str(generation), True, (0, 72, 186))
+        label = heading_font.render("FeedForwardNetwork: " + str(generation), True, (0, 72, 186))
         label_rect = label.get_rect()
         label_rect.center = (width / 2, 150)
         screen.blit(label, label_rect)
         
         cartext = heading_font.render("количество жертв: " + str(len(players)), True, (0, 36, 100))
         cartext_rect = label.get_rect()
-        cartext_rect.center = (width / 4, 100)
+        cartext_rect.center = (width / 2, 100)
         screen.blit(cartext, cartext_rect)
         # controls
         for i, player in enumerate(players):
@@ -301,7 +318,7 @@ def run_game(genomes, config):
                     player.bulCool = 15   
                  
        # flip & tick
-        #clock.tick(600)  # fixed 60 fps
+        clock.tick(600)  # fixed 60 fps
         pygame.display.flip()
 
 if __name__ == "__main__":
